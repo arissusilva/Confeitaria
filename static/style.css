@@ -1,90 +1,85 @@
-/* style.css - DOCES DO RABUDINHO (Versão Final: Blocos Corrigidos) */
+/* style.css - DOCES DO RABUDINHO (Restaurado e Funcional) */
 
-/* 1. RESET E FONTE PADRÃO (A "Fonte Anterior") */
+/* 1. RESET E FUNDO */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    /* Fonte limpa e padrão do sistema, sem ser cursiva */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* 2. FUNDO GERAL DO SITE (MARROM) */
 body {
-    background-color: #8a3106; /* Cor Chocolate */
-    color: #fff; /* Texto solto na página fica branco */
-    padding-bottom: 50px;
+    background-color: #8a3106; /* Fundo Chocolate */
+    color: #fff;
+    padding-bottom: 80px;
 }
 
-/* 3. CABEÇALHO (BEGE CLARINHO) */
-header, .header-flex, .header-simples {
-    background-color: #FFFDF0; /* Bege quase branco */
-    padding: 15px 0;
+/* 2. CABEÇALHO (Logo independente + Links) */
+header, .header-simples, .header-home {
+    background-color: #FFFDF0; /* Bege Clarinho */
+    color: #8a3106; /* Texto Marrom */
+    padding: 20px;
+    text-align: center;
     box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-    position: sticky; /* Menu fixo no topo */
+    position: sticky; 
     top: 0;
     z-index: 1000;
-    text-align: center; /* Garante alinhamento se não usar flex */
 }
 
-/* Configuração do Flexbox para Logo + Menu */
-.container-topo {
-    max-width: 1000px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center; /* Centralizados */
-    gap: 30px;
+header h1, .header-simples h1, .header-home h1 {
+    font-family: 'Pacifico', cursive;
+    font-size: 2.2em;
+    margin-bottom: 10px;
+    color: #8a3106;
+}
+
+/* Container do Menu */
+nav {
+    display: flex; /* Alinha tudo lado a lado */
+    justify-content: center; /* Centraliza no meio da tela */
+    align-items: center; /* Centraliza verticalmente */
+    gap: 20px; /* Espaço entre o Burrinho e os links */
     flex-wrap: wrap;
+    margin-top: 10px;
 }
 
-/* Logo pequena no menu */
-.logo-menu {
-    height: 50px;
+/* A Logomarca (Burrinho) no Menu */
+.logo-nav {
+    height: 50px; /* Um pouco maior agora que está solto */
     width: auto;
+    /* Não tem cursor pointer pois não é botão */
 }
 
 /* Links do Menu */
 nav a {
-    color: #8a3106; /* Texto Marrom Escuro para contraste no bege */
+    color: #8a3106;
     text-decoration: none;
     font-weight: bold;
-    font-size: 1.1em; /* Tamanho legível */
-    margin: 0 10px;
-    padding: 5px 10px;
+    font-size: 1.1em;
+    padding: 8px 15px;
+    border-radius: 5px;
     transition: 0.3s;
 }
 
 nav a:hover {
     background-color: #8a3106;
     color: #FFFDF0;
-    border-radius: 5px;
 }
-
-/* Títulos das páginas (H1 no header) */
-h1 {
-    color: #8a3106;
-    font-size: 1.8em;
-    margin: 0;
-}
-
-/* 4. ÁREA PRINCIPAL */
+/* 3. TÍTULOS E ESTRUTURA */
 main {
     max-width: 1000px;
     margin: 30px auto;
     padding: 0 20px;
 }
 
-/* Títulos das seções (H2) */
 h2 {
     text-align: center;
     margin: 30px 0 20px 0;
-    color: #FFFDF0; /* Título Claro no fundo Marrom */
+    color: #FFFDF0;
     text-transform: uppercase;
-    letter-spacing: 1px;
 }
 
-/* 5. BANNER CENTRAL (HOME) */
+/* 4. HOME: BANNER E BOTÃO */
 .banner-central {
     text-align: center;
     margin-bottom: 30px;
@@ -94,39 +89,41 @@ h2 {
     max-width: 100%;
     height: auto;
     max-height: 350px;
-    border-radius: 10px;
-    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+    border-radius: 20px;
+    filter: drop-shadow(0 10px 10px rgba(0,0,0,0.3));
 }
 
 .bemvindo {
     text-align: center;
-    color: #ffe0b2; /* Texto de boas vindas levemente amarelado */
+    max-width: 800px;
+    margin: 0 auto;
 }
 
-/* --- BOTÃO "BORA PEDIR" (HOME) --- */
+.bemvindo p {
+    font-size: 1.2em;
+    color: #ffe0b2;
+    margin-bottom: 25px;
+}
+
 .botao-destaque {
     display: inline-block;
-    background-color: #FFFDF0; /* Fundo Bege */
-    color: #8a3106; /* Texto Marrom */
+    background-color: #FFFDF0; /* Creme */
+    color: #8a3106; /* Marrom */
     padding: 15px 40px;
-    margin-top: 25px;
     text-decoration: none;
     font-weight: bold;
     font-size: 1.4em;
-    border-radius: 50px; /* Redondinho */
+    border-radius: 50px;
     box-shadow: 0 5px 10px rgba(0,0,0,0.3);
     transition: transform 0.2s;
 }
 
 .botao-destaque:hover {
-    transform: scale(1.1); /* Aumenta ao passar o mouse */
+    transform: scale(1.1);
     background-color: #fff;
 }
 
-/* 6. CORREÇÃO DOS BLOCOS (PEDIDO) */
-/* Aqui está o segredo para desbugar: display FLEX e fundo BRANCO */
-
-/* Container das Categorias (Bolo, Empada...) */
+/* 5. PEDIDOS: BLOCOS E CARDS */
 .grid-tamanhos {
     display: flex;
     justify-content: center;
@@ -134,12 +131,11 @@ h2 {
     flex-wrap: wrap;
 }
 
-/* O BLOCO EM SI */
 .opcao-tamanho {
-    background-color: white; /* Fundo BRANCO para aparecer */
-    color: #333; /* Texto escuro dentro do bloco */
+    background-color: white;
+    color: #333;
     border: 2px solid #ccc;
-    border-radius: 8px; /* Cantos quadrados levemente arredondados */
+    border-radius: 8px;
     padding: 20px;
     width: 200px;
     text-align: center;
@@ -153,32 +149,22 @@ h2 {
     border-color: #8a3106;
 }
 
-/* Quando selecionado */
 .opcao-tamanho.selecionado {
-    background-color: #FFF8E1; /* Amarelinho claro */
+    background-color: #FFF8E1;
     border-color: #8a3106;
     box-shadow: 0 0 15px rgba(255,255,255,0.4);
 }
 
-/* Texto pequeno de limite */
-.info-limite {
-    font-size: 0.85em;
-    color: #666;
-    margin-top: 10px;
-    font-weight: bold;
-}
-
-/* 7. GRID DE PRODUTOS (DOCES) */
+/* PRODUTOS */
 .grid-cardapio {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 20px;
 }
 
-/* CARD DO PRODUTO (Igual ao da pizza) */
 .card-doce {
-    background-color: white; /* Fundo BRANCO OBRIGATÓRIO */
-    color: #333; /* Texto escuro */
+    background-color: white;
+    color: #333;
     border: 2px solid #ddd;
     border-radius: 8px;
     overflow: hidden;
@@ -196,42 +182,68 @@ h2 {
 
 .card-doce h3 {
     font-size: 1.1em;
-    margin: 10px 10px 5px 10px;
-    color: #8a3106; /* Título do doce em Marrom */
+    margin: 10px 10px 0 10px;
+    color: #8a3106;
 }
 
 .card-doce p {
     font-size: 0.9em;
     color: #555;
-    margin: 0 10px 15px 10px;
+    margin: 0 10px 10px 10px;
 }
 
-/* Selecionado */
+.preco-destaque {
+    color: #2e7d32;
+    font-weight: bold;
+    font-size: 1.1em;
+    margin: 5px 10px;
+}
+
+/* Controle QTD */
+.controle-qtd {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    margin: 15px 0;
+    gap: 15px;
+    background-color: #fff8e1;
+    padding: 10px;
+    border-top: 1px solid #eee;
+}
+
+.card-doce.selecionado .controle-qtd {
+    display: flex;
+}
+
 .card-doce.selecionado {
     border-color: #8a3106;
     background-color: #FFF8E1;
 }
 
-.card-doce.selecionado::after {
-    content: "✔";
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #8a3106;
+.btn-qtd {
+    width: 35px;
+    height: 35px;
+    background-color: #8a3106;
     color: white;
-    width: 25px;
-    height: 25px;
+    border: none;
+    font-weight: bold;
     border-radius: 50%;
-    text-align: center;
-    line-height: 25px;
-    font-size: 14px;
+    cursor: pointer;
 }
 
-/* 8. MENSAGEM E BOTÃO FINALIZAR */
+.contador-numero {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #8a3106;
+    min-width: 25px;
+    text-align: center;
+}
+
+/* 6. MODAL DO CARRINHO, TOAST E FINALIZAÇÃO (MANTIDOS) */
 .mensagem {
     text-align: center;
     font-weight: bold;
-    color: #FFFDF0; /* Texto claro no fundo escuro */
+    color: #f8f1c1;
     margin-bottom: 20px;
     min-height: 24px;
 }
@@ -242,8 +254,8 @@ h2 {
     max-width: 300px;
     margin: 40px auto;
     padding: 15px;
-    background-color: #FFFDF0; /* Botão Claro */
-    color: #8a3106; /* Texto Marrom */
+    background-color: #FFFDF0;
+    color: #8a3106;
     border: none;
     border-radius: 5px;
     font-size: 1.2em;
@@ -263,55 +275,95 @@ h2 {
     cursor: not-allowed;
     transform: none;
 }
-/* --- ESTILOS DO CARRINHO DE COMPRAS --- */
-.carrinho-flutuante {
-    background: white;
-    border: 2px solid #8a3106;
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 40px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    color: #333; /* Texto escuro dentro do carrinho */
+
+/* Modal e Botão Flutuante */
+.fab-carrinho {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #8a3106;
+    color: white;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    cursor: pointer;
+    z-index: 2000;
+    border: 2px solid #FFFDF0;
 }
 
-.carrinho-flutuante h2 {
-    color: #8a3106;
-    margin-top: 0;
-    border-bottom: 1px solid #eee;
+.badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #d32f2f;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid white;
+}
+
+.modal-fundo {
+    display: none;
+    position: fixed;
+    z-index: 3000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    backdrop-filter: blur(5px);
+}
+
+.modal-conteudo {
+    background-color: white;
+    margin: 5% auto;
+    padding: 20px;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 15px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+    color: #333;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-conteudo h2 {
+    color: #8a3106; /* <--- MUDE AQUI A COR DO TEXTO "SEU CARRINHO" */
+    border-bottom: 1px solid #eee; /* Linha cinza embaixo dele */
     padding-bottom: 10px;
 }
 
-#lista-itens {
-    list-style: none;
-    padding: 0;
-    margin: 20px 0;
+.fechar-modal {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 .item-carrinho {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     padding: 10px;
     border-bottom: 1px solid #eee;
     background-color: #f9f9f9;
     margin-bottom: 5px;
     border-radius: 5px;
 }
-
-.item-carrinho .info strong {
-    display: block;
-    color: #8a3106;
-}
-
-.item-carrinho .info span {
-    font-size: 0.9em;
-    color: #666;
-}
-
-.item-carrinho .preco {
-    font-weight: bold;
-    color: #2e7d32; /* Preço em verde */
-}
+.item-carrinho .info div { margin-left: 0; color: #555; }
+.item-carrinho strong { color: #8a3106; }
 
 .btn-remover {
     background: #d32f2f;
@@ -320,9 +372,7 @@ h2 {
     border-radius: 50%;
     width: 25px;
     height: 25px;
-    margin-left: 10px;
     cursor: pointer;
-    font-weight: bold;
 }
 
 .total-carrinho {
@@ -331,4 +381,89 @@ h2 {
     font-weight: bold;
     color: #8a3106;
     margin: 20px 0;
+}
+
+.botao-secundario {
+    background: none;
+    border: none;
+    color: #666;
+    text-decoration: underline;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* Toast */
+#toast-notification {
+    visibility: hidden;
+    min-width: 250px;
+    background-color: #2e7d32;
+    color: #fff;
+    text-align: center;
+    border-radius: 50px;
+    padding: 16px;
+    position: fixed;
+    z-index: 5000;
+    left: 50%;
+    bottom: 30px;
+    transform: translateX(-50%);
+    font-size: 17px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    opacity: 0;
+    transition: opacity 0.5s, bottom 0.5s;
+}
+
+#toast-notification.mostrar {
+    visibility: visible;
+    opacity: 1;
+    bottom: 100px;
+}
+
+/* Caixa Resumo Final */
+.caixa-resumo {
+    background-color: white;
+    color: #333;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    padding: 30px;
+    margin: 30px auto;
+    max-width: 600px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    text-align: left;
+}
+
+.caixa-resumo ul { padding-left: 0; list-style-type: none; }
+.caixa-resumo li { border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; }
+.caixa-resumo li:last-child { border-bottom: none; }
+
+.botao-voltar {
+    display: inline-block;
+    background-color: #8a3106;
+    color: #FFFDF0;
+    padding: 15px 30px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 1.2em;
+    border: 3px solid #FFFDF0;
+    transition: all 0.3s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.botao-voltar:hover {
+    background-color: #FFFDF0;
+    color: #8a3106;
+    border-color: #8a3106;
+    transform: translateY(-3px);
+}
+/* Estilo Específico do Botão FECHAR PEDIDO */
+#btn-finalizar-compra {
+    background-color: #8a3106; /* <--- MUDE AQUI A COR DE FUNDO */
+    color: #FFFDF0; /* Cor do Texto do botão */
+    border: 2px solid #8a3106; /* <--- MUDE AQUI A COR DA BORDA */
+}
+
+#btn-finalizar-compra:hover {
+    background-color: #6a2504; /* Cor de fundo ao passar o mouse */
+    border-color: #6a2504;
 }

@@ -3,248 +3,219 @@
 <head>
     <meta charset="utf-8">
     <title>Doces do Rabudinho - Fazer Pedido</title>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
+    
     <script>
-        // --- ESTADO DO SISTEMA ---
         let categoriaSelecionada = null;
-        let precoSelecionado = 0;
-        let saboresSelecionados = [];
-        let carrinho = []; // Aqui ficam os itens guardados
+        let selecaoAtual = {}; 
+        let carrinho = []; 
 
-        // Mapa de preços (para exibir no JS)
-        const precos = {
-            "Bolo de Pote": 15.00,
-            "Empada": 8.00,
-            "Trufa": 5.00
-        };
+        function abrirCarrinho() { document.getElementById("modal-carrinho").style.display = "block"; }
+        function fecharCarrinho() { document.getElementById("modal-carrinho").style.display = "none"; }
+        
+        function exibirNotificacao(mensagem) {
+            const toast = document.getElementById("toast-notification");
+            toast.innerText = mensagem;
+            toast.className = "mostrar";
+            setTimeout(function(){ toast.className = toast.className.replace("mostrar", ""); }, 2000);
+        }
 
-        // 1. SELECIONA A CATEGORIA (Bolo, Empada...)
         function selecionarCategoria(card, categoriaNome) {
             document.querySelectorAll('.opcao-tamanho').forEach(c => c.classList.remove('selecionado'));
             card.classList.add('selecionado');
-            
             categoriaSelecionada = categoriaNome;
-            precoSelecionado = precos[categoriaNome];
-
-            // Mostra seção de sabores
-            const secaoSabores = document.getElementById("secao-sabores");
-            secaoSabores.style.display = "block";
-            
-            // Filtra os produtos
+            document.getElementById("secao-sabores").style.display = "block";
             const todosProdutos = document.querySelectorAll('.card-doce');
             todosProdutos.forEach(produto => {
                 const cat = produto.getAttribute('data-categoria');
-                if (cat === categoriaNome) {
-                    produto.style.display = "block";
-                } else {
-                    produto.style.display = "none";
-                }
+                if (cat === categoriaNome) { produto.style.display = "block"; } 
+                else { produto.style.display = "none"; }
             });
-
-            // Reseta sabores
-            limparSelecaoSabores();
-            
-            secaoSabores.scrollIntoView({ behavior: "smooth" });
-            validarBotaoAdicionar();
+            limparSelecao();
+            document.getElementById("secao-sabores").scrollIntoView({ behavior: "smooth" });
         }
 
-        // 2. SELECIONA OS SABORES
-        function selecionarSabor(card, sabor) {
-            if (!categoriaSelecionada) return;
-
-            const checkbox = card.querySelector("input[type=checkbox]");
-            
-            if (checkbox.checked) {
-                checkbox.checked = false;
-                card.classList.remove("selecionado");
-                saboresSelecionados = saboresSelecionados.filter(s => s !== sabor);
+        function toggleProduto(card, nome, preco) {
+            const estaSelecionado = card.classList.contains('selecionado');
+            if (estaSelecionado) {
+                card.classList.remove('selecionado');
+                delete selecaoAtual[nome];
+                const spanQtd = document.getElementById(`qtd-${nome.replace(/\s+/g, '-')}`);
+                if (spanQtd) spanQtd.innerText = "0";
             } else {
-                checkbox.checked = true;
-                card.classList.add("selecionado");
-                saboresSelecionados.push(sabor);
+                card.classList.add('selecionado');
+                selecaoAtual[nome] = { qtd: 1, preco: parseFloat(preco) };
+                const spanQtd = document.getElementById(`qtd-${nome.replace(/\s+/g, '-')}`);
+                if (spanQtd) spanQtd.innerText = "1";
             }
-
             validarBotaoAdicionar();
         }
 
-        // 3. ADICIONA AO CARRINHO (Memória)
-        function adicionarAoCarrinho() {
-            // Cria o objeto do item
-            const item = {
-                id: Date.now(), // Identificador único
-                categoria: categoriaSelecionada,
-                sabores: [...saboresSelecionados], // Copia o array
-                preco: precoSelecionado
-            };
+        function alterarQtd(event, nome, preco, delta) {
+            event.stopPropagation(); 
+            if (!selecaoAtual[nome]) selecaoAtual[nome] = { qtd: 0, preco: parseFloat(preco) };
+            let novaQtd = selecaoAtual[nome].qtd + delta;
+            if (novaQtd < 1) {
+                const card = document.getElementById(`card-${nome.replace(/\s+/g, '-')}`);
+                if (card) toggleProduto(card, nome, preco);
+                return;
+            }
+            selecaoAtual[nome].qtd = novaQtd;
+            const spanQtd = document.getElementById(`qtd-${nome.replace(/\s+/g, '-')}`);
+            if (spanQtd) spanQtd.innerText = novaQtd;
+            validarBotaoAdicionar();
+        }
 
-            carrinho.push(item);
-            atualizarVisualCarrinho();
-            
-            // Reseta a interface para pedir mais
-            limparSelecaoSabores();
+        function adicionarAoCarrinho() {
+            let itensParaAdicionar = [];
+            for (let [nome, dados] of Object.entries(selecaoAtual)) {
+                itensParaAdicionar.push({ nome: nome, qtd: dados.qtd, preco: dados.preco });
+            }
+            carrinho.push({ id: Date.now(), categoria: categoriaSelecionada, itens: itensParaAdicionar });
+            atualizarVisualCarrinho(); 
+            limparSelecao();
             document.querySelectorAll('.opcao-tamanho').forEach(c => c.classList.remove('selecionado'));
             document.getElementById("secao-sabores").style.display = "none";
             categoriaSelecionada = null;
-            saboresSelecionados = [];
-            
-            // Rola para o topo ou para o carrinho
-            document.getElementById("carrinho-area").scrollIntoView({ behavior: "smooth" });
+            exibirNotificacao("Item adicionado ao carrinho! 🛒");
         }
 
-        // 4. REMOVE DO CARRINHO
-        function removerDoCarrinho(id) {
-            carrinho = carrinho.filter(item => item.id !== id);
-            atualizarVisualCarrinho();
-        }
-
-        // 5. ATUALIZA A TELA DO CARRINHO
-        function atualizarVisualCarrinho() {
-            const lista = document.getElementById("lista-itens");
-            const totalSpan = document.getElementById("total-valor");
-            const divCarrinho = document.getElementById("carrinho-area");
-            const btnFinalizar = document.getElementById("btn-finalizar-compra");
-
-            lista.innerHTML = "";
-            let total = 0;
-
-            if (carrinho.length === 0) {
-                divCarrinho.style.display = "none";
-                return;
-            }
-
-            divCarrinho.style.display = "block";
-
-            carrinho.forEach(item => {
-                total += item.preco;
-                const li = document.createElement("li");
-                li.className = "item-carrinho";
-                li.innerHTML = `
-                    <div class="info">
-                        <strong>${item.categoria}</strong>
-                        <span>${item.sabores.join(', ')}</span>
-                    </div>
-                    <div class="preco">
-                        R$ ${item.preco.toFixed(2)}
-                        <button onclick="removerDoCarrinho(${item.id})" class="btn-remover">X</button>
-                    </div>
-                `;
-                lista.appendChild(li);
-            });
-
-            totalSpan.innerText = total.toFixed(2).replace('.', ',');
-        }
-
-        // 6. ENVIA TUDO PARA O PYTHON
-        function finalizarCompra() {
-            if (carrinho.length === 0) return;
-
-            fetch('/finalizar_pedido', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ carrinho: carrinho })
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Substitui o corpo da página pela mensagem de sucesso
-                document.body.innerHTML = data.html;
-            })
-            .catch(error => console.error('Erro:', error));
-        }
-
-        // Funções Auxiliares
-        function limparSelecaoSabores() {
-            saboresSelecionados = [];
-            document.querySelectorAll('.card-doce').forEach(c => {
-                c.classList.remove('selecionado');
-                c.querySelector("input[type=checkbox]").checked = false;
-            });
+        function limparSelecao() {
+            selecaoAtual = {};
+            document.querySelectorAll('.card-doce').forEach(c => c.classList.remove('selecionado'));
+            document.querySelectorAll('.contador-numero').forEach(s => s.innerText = "0");
             validarBotaoAdicionar();
         }
 
         function validarBotaoAdicionar() {
             const btn = document.getElementById("botao-adicionar");
             const msg = document.getElementById("mensagem-limite");
-            
-            if (categoriaSelecionada && saboresSelecionados.length > 0) {
+            let totalItens = 0;
+            let valorTotal = 0;
+            for (let dados of Object.values(selecaoAtual)) {
+                totalItens += dados.qtd;
+                valorTotal += (dados.qtd * dados.preco);
+            }
+            if (categoriaSelecionada && totalItens > 0) {
                 btn.disabled = false;
-                btn.innerText = `Adicionar ${categoriaSelecionada} ao Carrinho`;
-                msg.innerText = `${saboresSelecionados.length} sabor(es) selecionado(s)`;
+                btn.innerText = `Adicionar (R$ ${valorTotal.toFixed(2)})`;
+                msg.innerHTML = `${totalItens} item(ns) selecionados`;
             } else {
                 btn.disabled = true;
-                btn.innerText = "Selecione Sabores";
+                btn.innerText = "Selecione os produtos";
                 msg.innerText = "";
             }
+        }
+
+        function atualizarVisualCarrinho() {
+            const lista = document.getElementById("lista-itens");
+            const totalSpan = document.getElementById("total-valor");
+            const btnFlutuante = document.getElementById("btn-flutuante");
+            const badge = document.getElementById("badge-contador");
+            lista.innerHTML = "";
+            let totalGeral = 0;
+            if (carrinho.length === 0) {
+                btnFlutuante.style.display = "none"; 
+                fecharCarrinho();
+                return;
+            }
+            btnFlutuante.style.display = "flex";
+            carrinho.forEach(lote => {
+                let htmlItens = "";
+                lote.itens.forEach(item => {
+                    let sub = item.qtd * item.preco;
+                    totalGeral += sub;
+                    htmlItens += `<div>${item.qtd}x ${item.nome} <small>(R$ ${item.preco.toFixed(2)})</small></div>`;
+                });
+                const li = document.createElement("li");
+                li.className = "item-carrinho";
+                li.innerHTML = `
+                    <div class="info"><strong>${lote.categoria}</strong>${htmlItens}</div>
+                    <div class="preco"><button onclick="removerDoCarrinho(${lote.id})" class="btn-remover">X</button></div>
+                `;
+                lista.appendChild(li);
+            });
+            totalSpan.innerText = totalGeral.toFixed(2).replace('.', ',');
+            badge.innerText = carrinho.length;
+        }
+
+        function removerDoCarrinho(id) {
+            carrinho = carrinho.filter(x => x.id !== id);
+            atualizarVisualCarrinho();
+        }
+
+        function finalizarCompra() {
+            fetch('/finalizar_pedido', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ carrinho: carrinho })
+            }).then(r => r.json()).then(data => document.body.innerHTML = data.html);
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById("modal-carrinho");
+            if (event.target == modal) fecharCarrinho();
         }
     </script>
 </head>
 <body>
 
     <header class="header-simples">
-        <h1 style="font-family: 'Pacifico', cursive;">Faça seu Pedido</h1>
-        <nav><a href="/">Voltar ao Início</a></nav>
+        <nav>
+            <img src="{{ url_for('static', filename='img/rabudinho1.png') }}" alt="Logo Burrinho" class="logo-nav">
+            
+            <a href="/">Início</a>
+            <a href="/pedido">Fazer Pedido</a>
+            <a href="/cadastro">Cadastro</a>
+            <a href="/login">Login</a>
+            <a href="/contato">Contato</a>
+            <a href="/feedback">Feedback</a>
+        </nav>
     </header>
 
 <main>
 
-    <div id="carrinho-area" class="carrinho-flutuante" style="display: none;">
-        <h2>🛒 Seu Carrinho</h2>
-        <ul id="lista-itens">
-            </ul>
-        <div class="total-carrinho">
-            Total: R$ <span id="total-valor">0,00</span>
-        </div>
-        <button id="btn-finalizar-compra" class="botao" onclick="finalizarCompra()">
-            ✅ Concluir Pedido
-        </button>
-        <hr style="margin: 20px 0; border-color: #ddd;">
-        <h3 style="text-align: center; color: #8a3106;">Quer algo mais? Continue escolhendo abaixo:</h3>
-    </div>
-
     <h2 style="text-transform: uppercase;">COM QUE VAMOS ADOÇAR SEU DIA HOJE?</h2>
-
+    
     <div class="grid-tamanhos">
         <div class="opcao-tamanho" onclick="selecionarCategoria(this, 'Bolo de Pote')">
             <h3>Bolo de Pote</h3>
-            <p>Cremoso e molhadinho</p>
-            <p><strong>R$ 15,00</strong></p>
+            <p>Diversos sabores</p>
         </div>
-
         <div class="opcao-tamanho" onclick="selecionarCategoria(this, 'Empada')">
             <h3>Empada</h3>
-            <p>Massa podre que derrete</p>
-            <p><strong>R$ 8,00</strong></p>
+            <p>Salgados deliciosos</p>
         </div>
-
         <div class="opcao-tamanho" onclick="selecionarCategoria(this, 'Trufa')">
             <h3>Trufa</h3>
-            <p>Chocolate nobre</p>
-            <p><strong>R$ 5,00</strong></p>
+            <p>Chocolates finos</p>
         </div>
     </div>
 
     <div id="secao-sabores" style="display: none; margin-top: 50px;">
-        
-        <h2>Escolha os Sabores</h2>
+        <h2>Selecione os Produtos</h2>
         <p class="mensagem" id="mensagem-limite"></p>
 
         <div class="grid-cardapio">
             {% for doce in produtos %}
             <div class="card-doce" 
-                 data-categoria="{{ doce.categoria }}" 
-                 onclick="selecionarSabor(this, '{{ doce.nome }}')">
+                 id="card-{{ doce.nome|replace(' ', '-') }}"
+                 data-categoria="{{ doce.categoria }}"
+                 onclick="toggleProduto(this, '{{ doce.nome }}', '{{ doce.preco }}')">
                 
                 <img src="{{ url_for('static', filename='img/' + doce.img_file) }}" alt="{{ doce.nome }}">
                 <h3>{{ doce.nome }}</h3>
+                <p class="preco-destaque">R$ {{ "%.2f"|format(doce.preco) }}</p>
                 <p>{{ doce.descricao }}</p>
 
-                <input type="checkbox" style="display:none;">
+                <div class="controle-qtd">
+                    <button class="btn-qtd" onclick="alterarQtd(event, '{{ doce.nome }}', '{{ doce.preco }}', -1)">-</button>
+                    <span class="contador-numero" id="qtd-{{ doce.nome|replace(' ', '-') }}">0</span>
+                    <button class="btn-qtd" onclick="alterarQtd(event, '{{ doce.nome }}', '{{ doce.preco }}', 1)">+</button>
+                </div>
             </div>
             {% endfor %}
         </div>
@@ -252,6 +223,24 @@
         <button type="button" id="botao-adicionar" class="botao" disabled onclick="adicionarAoCarrinho()">
             Adicionar ao Carrinho
         </button>
+    </div>
+
+    <div id="toast-notification">Item adicionado ao carrinho!</div>
+
+    <div id="btn-flutuante" class="fab-carrinho" onclick="abrirCarrinho()" style="display: none;">
+        🛒
+        <span id="badge-contador" class="badge">0</span>
+    </div>
+
+    <div id="modal-carrinho" class="modal-fundo">
+        <div class="modal-conteudo">
+            <span class="fechar-modal" onclick="fecharCarrinho()">&times;</span>
+            <h2>🛒 Seu Carrinho</h2>
+            <ul id="lista-itens"></ul>
+            <div class="total-carrinho">Total: R$ <span id="total-valor">0,00</span></div>
+            <button id="btn-finalizar-compra" class="botao" onclick="finalizarCompra()">✅ FECHAR PEDIDO</button>
+            <button class="botao-secundario" onclick="fecharCarrinho()">Continuar Comprando</button>
+        </div>
     </div>
 
 </main>
