@@ -1,0 +1,334 @@
+/* style.css - DOCES DO RABUDINHO (Versão Final: Blocos Corrigidos) */
+
+/* 1. RESET E FONTE PADRÃO (A "Fonte Anterior") */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    /* Fonte limpa e padrão do sistema, sem ser cursiva */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* 2. FUNDO GERAL DO SITE (MARROM) */
+body {
+    background-color: #8a3106; /* Cor Chocolate */
+    color: #fff; /* Texto solto na página fica branco */
+    padding-bottom: 50px;
+}
+
+/* 3. CABEÇALHO (BEGE CLARINHO) */
+header, .header-flex, .header-simples {
+    background-color: #FFFDF0; /* Bege quase branco */
+    padding: 15px 0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    position: sticky; /* Menu fixo no topo */
+    top: 0;
+    z-index: 1000;
+    text-align: center; /* Garante alinhamento se não usar flex */
+}
+
+/* Configuração do Flexbox para Logo + Menu */
+.container-topo {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centralizados */
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+/* Logo pequena no menu */
+.logo-menu {
+    height: 50px;
+    width: auto;
+}
+
+/* Links do Menu */
+nav a {
+    color: #8a3106; /* Texto Marrom Escuro para contraste no bege */
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1em; /* Tamanho legível */
+    margin: 0 10px;
+    padding: 5px 10px;
+    transition: 0.3s;
+}
+
+nav a:hover {
+    background-color: #8a3106;
+    color: #FFFDF0;
+    border-radius: 5px;
+}
+
+/* Títulos das páginas (H1 no header) */
+h1 {
+    color: #8a3106;
+    font-size: 1.8em;
+    margin: 0;
+}
+
+/* 4. ÁREA PRINCIPAL */
+main {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+/* Títulos das seções (H2) */
+h2 {
+    text-align: center;
+    margin: 30px 0 20px 0;
+    color: #FFFDF0; /* Título Claro no fundo Marrom */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* 5. BANNER CENTRAL (HOME) */
+.banner-central {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.banner-central img {
+    max-width: 100%;
+    height: auto;
+    max-height: 350px;
+    border-radius: 10px;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+}
+
+.bemvindo {
+    text-align: center;
+    color: #ffe0b2; /* Texto de boas vindas levemente amarelado */
+}
+
+/* --- BOTÃO "BORA PEDIR" (HOME) --- */
+.botao-destaque {
+    display: inline-block;
+    background-color: #FFFDF0; /* Fundo Bege */
+    color: #8a3106; /* Texto Marrom */
+    padding: 15px 40px;
+    margin-top: 25px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.4em;
+    border-radius: 50px; /* Redondinho */
+    box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+    transition: transform 0.2s;
+}
+
+.botao-destaque:hover {
+    transform: scale(1.1); /* Aumenta ao passar o mouse */
+    background-color: #fff;
+}
+
+/* 6. CORREÇÃO DOS BLOCOS (PEDIDO) */
+/* Aqui está o segredo para desbugar: display FLEX e fundo BRANCO */
+
+/* Container das Categorias (Bolo, Empada...) */
+.grid-tamanhos {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* O BLOCO EM SI */
+.opcao-tamanho {
+    background-color: white; /* Fundo BRANCO para aparecer */
+    color: #333; /* Texto escuro dentro do bloco */
+    border: 2px solid #ccc;
+    border-radius: 8px; /* Cantos quadrados levemente arredondados */
+    padding: 20px;
+    width: 200px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.opcao-tamanho:hover {
+    transform: translateY(-5px);
+    border-color: #8a3106;
+}
+
+/* Quando selecionado */
+.opcao-tamanho.selecionado {
+    background-color: #FFF8E1; /* Amarelinho claro */
+    border-color: #8a3106;
+    box-shadow: 0 0 15px rgba(255,255,255,0.4);
+}
+
+/* Texto pequeno de limite */
+.info-limite {
+    font-size: 0.85em;
+    color: #666;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+/* 7. GRID DE PRODUTOS (DOCES) */
+.grid-cardapio {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+/* CARD DO PRODUTO (Igual ao da pizza) */
+.card-doce {
+    background-color: white; /* Fundo BRANCO OBRIGATÓRIO */
+    color: #333; /* Texto escuro */
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: 0.2s;
+    position: relative;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.card-doce img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.card-doce h3 {
+    font-size: 1.1em;
+    margin: 10px 10px 5px 10px;
+    color: #8a3106; /* Título do doce em Marrom */
+}
+
+.card-doce p {
+    font-size: 0.9em;
+    color: #555;
+    margin: 0 10px 15px 10px;
+}
+
+/* Selecionado */
+.card-doce.selecionado {
+    border-color: #8a3106;
+    background-color: #FFF8E1;
+}
+
+.card-doce.selecionado::after {
+    content: "✔";
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #8a3106;
+    color: white;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 25px;
+    font-size: 14px;
+}
+
+/* 8. MENSAGEM E BOTÃO FINALIZAR */
+.mensagem {
+    text-align: center;
+    font-weight: bold;
+    color: #FFFDF0; /* Texto claro no fundo escuro */
+    margin-bottom: 20px;
+    min-height: 24px;
+}
+
+.botao {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    margin: 40px auto;
+    padding: 15px;
+    background-color: #FFFDF0; /* Botão Claro */
+    color: #8a3106; /* Texto Marrom */
+    border: none;
+    border-radius: 5px;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.botao:hover {
+    background-color: white;
+    transform: scale(1.02);
+}
+
+.botao:disabled {
+    background-color: #555;
+    color: #888;
+    cursor: not-allowed;
+    transform: none;
+}
+/* --- ESTILOS DO CARRINHO DE COMPRAS --- */
+.carrinho-flutuante {
+    background: white;
+    border: 2px solid #8a3106;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 40px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    color: #333; /* Texto escuro dentro do carrinho */
+}
+
+.carrinho-flutuante h2 {
+    color: #8a3106;
+    margin-top: 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+#lista-itens {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.item-carrinho {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    background-color: #f9f9f9;
+    margin-bottom: 5px;
+    border-radius: 5px;
+}
+
+.item-carrinho .info strong {
+    display: block;
+    color: #8a3106;
+}
+
+.item-carrinho .info span {
+    font-size: 0.9em;
+    color: #666;
+}
+
+.item-carrinho .preco {
+    font-weight: bold;
+    color: #2e7d32; /* Preço em verde */
+}
+
+.btn-remover {
+    background: #d32f2f;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    margin-left: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.total-carrinho {
+    text-align: right;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #8a3106;
+    margin: 20px 0;
+}

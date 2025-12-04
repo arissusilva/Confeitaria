@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <title>Doces do Rabudinho - Fazer Pedido</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <script>
+        // --- ESTADO DO SISTEMA ---
+        let categoriaSelecionada = null;
+        let precoSelecionado = 0;
+        let saboresSelecionados = [];
+        let carrinho = []; // Aqui ficam os itens guardados
+
+        // Mapa de preços (para exibir no JS)
+        const precos = {
+            "Bolo de Pote": 15.00,
+            "Empada": 8.00,
+            "Trufa": 5.00
+        };
+
+        // 1. SELECIONA A CATEGORIA (Bolo, Empada...)
+        function selecionarCategoria(card, categoriaNome) {
+            document.querySelectorAll('.opcao-tamanho').forEach(c => c.classList.remove('selecionado'));
+            card.classList.add('selecionado');
+            
+            categoriaSelecionada = categoriaNome;
+            precoSelecionado = precos[categoriaNome];
+
+            // Mostra seção de sabores
+            const secaoSabores = document.getElementById("secao-sabores");
+            secaoSabores.style.display = "block";
+            
+            // Filtra os produtos
+            const todosProdutos = document.querySelectorAll('.card-doce');
+            todosProdutos.forEach(produto => {
+                const cat = produto.getAttribute('data-categoria');
+                if (cat === categoriaNome) {
+                    produto.style.display = "block";
+                } else {
+                    produto.style.display = "none";
+                }
+            });
+
+            // Reseta sabores
+            limparSelecaoSabores();
+            
+            secaoSabores.scrollIntoView({ behavior: "smooth" });
+            validarBotaoAdicionar();
+        }
+
+        // 2. SELECIONA OS SABORES
+        function selecionarSabor(card, sabor) {
+            if (!categoriaSelecionada) return;
+
+            const checkbox = card.querySelector("input[type=checkbox]");
+            
+            if (checkbox.checked) {
+                checkbox.checked = false;
+                card.classList.remove("selecionado");
+                saboresSelecionados = saboresSelecionados.filter(s => s !== sabor);
+            } else {
+                checkbox.checked = true;
+                card.classList.add("selecionado");
+                saboresSelecionados.push(sabor);
+            }
+
+            validarBotaoAdicionar();
+        }
+
+        // 3. ADICIONA AO CARRINHO (Memória)
+        function adicionarAoCarrinho() {
+            // Cria o objeto do item
+            const item = {
+                id: Date.now(), // Identificador único
+                categoria: categoriaSelecionada,
+                sabores: [...saboresSelecionados], // Copia o array
+                preco: precoSelecionado
+            };
+
+            carrinho.push(item);
+            atualizarVisualCarrinho();
+            
+            // Reseta a interface para pedir mais
+            limparSelecaoSabores();
+            document.querySelectorAll('.opcao-tamanho').forEach(c => c.classList.remove('selecionado'));
+            document.getElementById("secao-sabores").style.display = "none";
+            categoriaSelecionada = null;
+            saboresSelecionados = [];
+            
+            // Rola para o topo ou para o carrinho
+            document.getElementById("carrinho-area").scrollIntoView({ behavior: "smooth" });
+        }
+
+        // 4. REMOVE DO CARRINHO
+        function removerDoCarrinho(id) {
+            carrinho = carrinho.filter(item => item.id !== id);
+            atualizarVisualCarrinho();
+        }
+
+        // 5. ATUALIZA A TELA DO CARRINHO
+        function atualizarVisualCarrinho() {
+            const lista = document.getElementById("lista-itens");
+            const totalSpan = document.getElementById("total-valor");
+            const divCarrinho = document.getElementById("carrinho-area");
+            const btnFinalizar = document.getElementById("btn-finalizar-compra");
+
+            lista.innerHTML = "";
+            let total = 0;
+
+            if (carrinho.length === 0) {
+                divCarrinho.style.display = "none";
+                return;
+            }
+
+            divCarrinho.style.display = "block";
+
+            carrinho.forEach(item => {
+                total += item.preco;
+                const li = document.createElement("li");
+                li.className = "item-carrinho";
+                li.innerHTML = `
+                    <div class="info">
+                        <strong>${item.categoria}</strong>
+                        <span>${item.sabores.join(', ')}</span>
+                    </div>
+                    <div class="preco">
+                        R$ ${item.preco.toFixed(2)}
+                        <button onclick="removerDoCarrinho(${item.id})" class="btn-remover">X</button>
+                    </div>
+                `;
+                lista.appendChild(li);
+            });
+
+            totalSpan.innerText = total.toFixed(2).replace('.', ',');
+        }
+
+        // 6. ENVIA TUDO PARA O PYTHON
+        function finalizarCompra() {
+            if (carrinho.length === 0) return;
+
+            fetch('/finalizar_pedido', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ carrinho: carrinho })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Substitui o corpo da página pela mensagem de sucesso
+                document.body.innerHTML = data.html;
+            })
+            .catch(error => console.error('Erro:', error));
+        }
+
+        // Funções Auxiliares
+        function limparSelecaoSabores() {
+            saboresSelecionados = [];
+            document.querySelectorAll('.card-doce').forEach(c => {
+                c.classList.remove('selecionado');
+                c.querySelector("input[type=checkbox]").checked = false;
+            });
+            validarBotaoAdicionar();
+        }
+
+        function validarBotaoAdicionar() {
+            const btn = document.getElementById("botao-adicionar");
+            const msg = document.getElementById("mensagem-limite");
+            
+            if (categoriaSelecionada && saboresSelecionados.length > 0) {
+                btn.disabled = false;
+                btn.innerText = `Adicionar ${categoriaSelecionada} ao Carrinho`;
+                msg.innerText = `${saboresSelecionados.length} sabor(es) selecionado(s)`;
+            } else {
+                btn.disabled = true;
+                btn.innerText = "Selecione Sabores";
+                msg.innerText = "";
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <header class="header-simples">
+        <h1 style="font-family: 'Pacifico', cursive;">Faça seu Pedido</h1>
+        <nav><a href="/">Voltar ao Início</a></nav>
+    </header>
+
+<main>
+
+    <div id="carrinho-area" class="carrinho-flutuante" style="display: none;">
+        <h2>🛒 Seu Carrinho</h2>
+        <ul id="lista-itens">
+            </ul>
+        <div class="total-carrinho">
+            Total: R$ <span id="total-valor">0,00</span>
+        </div>
+        <button id="btn-finalizar-compra" class="botao" onclick="finalizarCompra()">
+            ✅ Concluir Pedido
+        </button>
+        <hr style="margin: 20px 0; border-color: #ddd;">
+        <h3 style="text-align: center; color: #8a3106;">Quer algo mais? Continue escolhendo abaixo:</h3>
+    </div>
+
+    <h2 style="text-transform: uppercase;">COM QUE VAMOS ADOÇAR SEU DIA HOJE?</h2>
+
+    <div class="grid-tamanhos">
+        <div class="opcao-tamanho" onclick="selecionarCategoria(this, 'Bolo de Pote')">
+            <h3>Bolo de Pote</h3>
+            <p>Cremoso e molhadinho</p>
+            <p><strong>R$ 15,00</strong></p>
+        </div>
+
+        <div class="opcao-tamanho" onclick="selecionarCategoria(this, 'Empada')">
+            <h3>Empada</h3>
+            <p>Massa podre que derrete</p>
+            <p><strong>R$ 8,00</strong></p>
+        </div>
+
+        <div class="opcao-tamanho" onclick="selecionarCategoria(this, 'Trufa')">
+            <h3>Trufa</h3>
+            <p>Chocolate nobre</p>
+            <p><strong>R$ 5,00</strong></p>
+        </div>
+    </div>
+
+    <div id="secao-sabores" style="display: none; margin-top: 50px;">
+        
+        <h2>Escolha os Sabores</h2>
+        <p class="mensagem" id="mensagem-limite"></p>
+
+        <div class="grid-cardapio">
+            {% for doce in produtos %}
+            <div class="card-doce" 
+                 data-categoria="{{ doce.categoria }}" 
+                 onclick="selecionarSabor(this, '{{ doce.nome }}')">
+                
+                <img src="{{ url_for('static', filename='img/' + doce.img_file) }}" alt="{{ doce.nome }}">
+                <h3>{{ doce.nome }}</h3>
+                <p>{{ doce.descricao }}</p>
+
+                <input type="checkbox" style="display:none;">
+            </div>
+            {% endfor %}
+        </div>
+
+        <button type="button" id="botao-adicionar" class="botao" disabled onclick="adicionarAoCarrinho()">
+            Adicionar ao Carrinho
+        </button>
+    </div>
+
+</main>
+</body>
+</html>

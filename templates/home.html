@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <title>Doces do Rabudinho - Início</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <header class="header-flex">
+        <div class="container-topo">
+            
+            <img src="{{ url_for('static', filename='img/rabudinho1.png') }}" alt="Logo Pequena" class="logo-menu">
+            
+            <nav>
+                <a href="/">Início</a>
+                <a href="/pedido">Faça Seu Pedido</a>
+                <a href="/cadastro">Cadastro</a>
+                <a href="/login">Login</a>
+                <a href="/contato">Contato</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        
+        <div class="banner-central">
+            <img src="{{ url_for('static', filename='img/rabudinho2.png') }}" alt="Destaque Doces do Rabudinho">
+        </div>
+
+        <div class="bemvindo">
+            <h2>VEM PRO NOSSO INSTAGRAM!</h2>
+            <h2>@DOCESDORABUDINHO</h2>
+            
+            <br>
+            <a href="/pedido" class="botao-destaque">Quero pedir agora!</a>
+        </div>
+
+    </main>
+</body>
+</html>
